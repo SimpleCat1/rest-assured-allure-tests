@@ -1,0 +1,1 @@
+Тестирование Api сайта http:/demowebshop.tricentis.com/. Добавлял товар в корзину , проверял количество товара в корзине.Добавил Allure и Allure TestOps ,jenkins
