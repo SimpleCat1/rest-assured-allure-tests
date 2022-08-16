@@ -63,7 +63,7 @@ public class DemowebshopApiMethodTests extends TestBase {
 
     @Epic("Авторизованный пользователь")
     @Feature("Добавление товара")
-    @Story("Добавление товара у одного пользователя")
+    @Story("Добавление товара у одного пользователя с использованием куков")
     @Owner("SimplePerson")
     @Severity(SeverityLevel.CRITICAL)
     @DisplayName("Добавление товара по кукам")
