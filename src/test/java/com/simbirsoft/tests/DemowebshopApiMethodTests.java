@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DemowebshopApiMethodTests extends TestBase {
 
     @Epic("Неавторизованный пользователь")
-    @Feature("Добавление товара")
+    @Feature("Добавление товара api")
     @Story("Добавление товара")
     @Owner("SimplePerson")
     @Severity(SeverityLevel.CRITICAL)
@@ -62,8 +62,8 @@ public class DemowebshopApiMethodTests extends TestBase {
     }
 
     @Epic("Авторизованный пользователь")
-    @Feature("Добавление товара у одного пользователя")
-    @Story("Добавление товара")
+    @Feature("Добавление товара")
+    @Story("Добавление товара у одного пользователя")
     @Owner("SimplePerson")
     @Severity(SeverityLevel.CRITICAL)
     @DisplayName("Добавление товара по кукам")
