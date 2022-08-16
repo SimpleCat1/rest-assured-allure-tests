@@ -1,12 +1,10 @@
 package com.simbirsoft.tests;
 
 
-import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 
-import static com.simbirsoft.filters.CustomLogFilter.customLogFilter;
 import static io.restassured.RestAssured.given;
 
 public class TestBase {
