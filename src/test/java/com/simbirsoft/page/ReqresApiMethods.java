@@ -1,27 +1,25 @@
 package com.simbirsoft.page;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ReqresApiMethods {
-    public static boolean checkValue(String data) {
-        String regexp = "(<input type=\"checkbox\" name=\"removefromcart\" value=\"\\d{7}\"\\s\\/>)";
-        Pattern pattern = Pattern.compile(regexp);
-        boolean value = pattern.matcher(data).find();
-        return value;
+    public static String checkValue(String data) {
+        Document html = Jsoup.parse(data);
+        return html.body().selectXpath("//input[@name='removefromcart']").val();
     }
 
     private static String checkQuantity(String data) {
-        String regexp = "<input name=\"itemquantity\\d{7}\" type=\"text\" value=\"\\d{1,}\" class=\"qty-input\" \\/>";
-        Pattern pattern = Pattern.compile(regexp);
-        Matcher math = pattern.matcher(data);
-        math.find();
-        String quantity = math.group();
-        return quantity;
+        Document html = Jsoup.parse(data);
+        String count = html.body().select(".cart-qty").text();
+        return count;
     }
 
     public static Integer getQuantity(String data) {
-        String regexp = "(?<=\")\\d{1,}";
+        String regexp = "(?<=\\()\\d{1,}";
         Pattern pattern = Pattern.compile(regexp);
         Matcher math = pattern.matcher(checkQuantity(data));
         math.find();

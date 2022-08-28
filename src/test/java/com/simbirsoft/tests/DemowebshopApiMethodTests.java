@@ -1,19 +1,16 @@
 package com.simbirsoft.tests;
 
 import com.simbirsoft.data.AddWishApiData;
-import com.simbirsoft.data.CheckWishApiData;
 import io.qameta.allure.Description;
 import io.qameta.allure.Epic;
 import io.qameta.allure.Feature;
 import io.qameta.allure.Owner;
 import io.qameta.allure.Severity;
 import io.qameta.allure.SeverityLevel;
-import io.qameta.allure.Step;
 import io.qameta.allure.Story;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -42,22 +39,23 @@ public class DemowebshopApiMethodTests extends TestBase {
 
             Response response = given()
                     .filter(customLogFilter().withCustomTemplates())
-                    .contentType(data.contentType)
+                    .contentType("application/x-www-form-urlencoded; charset=UTF-8")
                     .body(data.body)
                     .log().uri()
                     .log().body()
                     .when()
-                    .post(data.url)
+                    .post("/addproducttocart/details/72/1")
                     .then()
                     .log().body()
                     .body(matchesJsonSchemaInClasspath("shemas/GenerateSheme.json"))
-                    .statusCode(data.statusCode)
+                    .statusCode(200)
                     .extract()
                     .response();
 
-            assertThat(response.path("success").toString()).isGreaterThanOrEqualTo(data.textSuccessBuy);
-            assertThat(response.path("message").toString()).isGreaterThanOrEqualTo(data.textAnswer);
-            assertThat(response.path("updatetopcartsectionhtml").toString()).isGreaterThanOrEqualTo(data.textCountItem);
+            assertThat(response.path("success").toString()).isGreaterThanOrEqualTo("true");
+            assertThat(response.path("message").toString()).isGreaterThanOrEqualTo("The product has been added to " +
+                    "your <a href=\"/cart\">shopping cart</a>");
+            assertThat(response.path("updatetopcartsectionhtml").toString()).isGreaterThanOrEqualTo("(1)");
         });
     }
 
@@ -75,35 +73,35 @@ public class DemowebshopApiMethodTests extends TestBase {
     @ParameterizedTest(name = "{index} - {0} is a addingMultipleProductsToTheCart")
     void addingMultipleProductsToTheCart(int amountItem, int amountTest) {
         step("Количество товара увеличивается, после каждого теста, в корзине", () -> {
-        AddWishApiData data = new AddWishApiData();
-        CheckWishApiData data1 = new CheckWishApiData();
-        int numberOfCycles = 0;
+            AddWishApiData data = new AddWishApiData();
+            int numberOfCycles = 0;
 
-        do {
-            given()
+            do {
+                given()
+                        .filter(customLogFilter().withCustomTemplates())
+                        .contentType("application/x-www-form-urlencoded; charset=UTF-8")
+                        .cookie(cookie)
+                        .body(data.body)
+                        .log().uri()
+                        .log().body()
+                        .when()
+                        .post("/addproducttocart/details/72/1");
+                numberOfCycles += 1;
+            } while (numberOfCycles < amountTest);
+            Response response2 = given()
                     .filter(customLogFilter().withCustomTemplates())
-                    .contentType(data.contentType)
-                    .cookie(cookie)
-                    .body(data.body)
                     .log().uri()
                     .log().body()
                     .when()
-                    .post(data.url);
-            numberOfCycles += 1;
-        } while (numberOfCycles < amountTest);
-        Response response2 = given()
-                .filter(customLogFilter().withCustomTemplates())
-                .log().uri()
-                .log().body()
-                .when()
-                .cookie(cookie)
-                .post(data1.url)
-                .then()
-                .statusCode(data1.statusCode)
-                .extract()
-                .response();
+                    .cookie(cookie)
+                    .post("/cart")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .response();
 
-        assertThat(getQuantity(response2.getBody().print())).isEqualTo(amountItem);});
+            assertThat(getQuantity(response2.getBody().print())).isEqualTo(amountItem);
+        });
     }
 
     @Epic("Неавторизованный пользователь")
@@ -116,19 +114,19 @@ public class DemowebshopApiMethodTests extends TestBase {
     @Test
     void checkingTheShoppingCart() {
         step("Проверяем ,что в коризине нету товара", () -> {
-        CheckWishApiData data1 = new CheckWishApiData();
 
-        Response response1 = given()
-                .filter(new AllureRestAssured())
-                .log().uri()
-                .log().body()
-                .when()
-                .post(data1.url)
-                .then()
-                .statusCode(data1.statusCode)
-                .extract()
-                .response();
+            Response response1 = given()
+                    .filter(new AllureRestAssured())
+                    .log().uri()
+                    .log().body()
+                    .when()
+                    .post("/cart")
+                    .then()
+                    .statusCode(200)
+                    .extract()
+                    .response();
 
-        assertThat(checkValue(response1.getBody().print())).isEqualTo(data1.availabilityOfTheProductInTheCart);});
+            assertThat(checkValue(response1.getBody().print())).isEqualTo("");
+        });
     }
 }
